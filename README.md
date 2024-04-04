@@ -1,46 +1,74 @@
-# Getting Started with Create React App
+# Chat Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a proof of concept (PoC) for a real-time chat application built with React, Zustand, and Tailwind CSS. It's designed to be responsive and work well on a variety of screen sizes, mobile version not yet implemented.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- Real-time chat functionality(with mock emulation)
+- Responsive design
+- Message length limit
 
-### `npm start`
+## Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- React for building the user interface
+- Zustand for state management
+- Tailwind CSS for styling
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Installation
 
-### `npm test`
+To install the application, follow these steps:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Clone the repository: `git clone https://github.com/yourusername/chat-app.git`
+2. Navigate to the project directory: `cd chat-app`
+3. Install the dependencies: `npm install`
+4. Start the application: `npm start`
 
-### `npm run build`
+The application will be available at `http://localhost:3000`.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Testing
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+To run the tests, use the `npm test` command.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## WebSocket Server Implementation
 
-### `npm run eject`
+The current `ChatProvider` is a mock implementation for demonstration purposes. To connect the application to a real WebSocket server, you'll need to replace the `sendMessage` function in `ChatProvider.tsx` with one that sends the message to the server.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```typescriptreact
+import React, { useEffect, createContext, useContext } from 'react';
+import { useStore } from './store';
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+const ws = new WebSocket('ws://localhost:8080');
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+type ChatContextType = {
+  sendMessage: (msg: string) => void;
+};
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
-## Learn More
+export const ChatProvider: React.FC = ({ children }) => {
+  const addMessage = useStore((state) => state.addMessage);
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+  useEffect(() => {
+    ws.onmessage = (event) => {
+      addMessage(event.data);
+    };
+  }, [addMessage]);
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+  const sendMessage = (msg: string) => {
+    ws.send(msg);
+  };
+
+  return (
+    <ChatContext.Provider value={{ sendMessage }}>
+      {children}
+    </ChatContext.Provider>
+  );
+};
+
+export const useChat = () => {
+  const context = useContext(ChatContext);
+  if (context === undefined) {
+    throw new Error('useChat must be used within a ChatProvider');
+  }
+  return context;
+};
