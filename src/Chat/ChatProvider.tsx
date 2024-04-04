@@ -1,5 +1,5 @@
 import React, { useEffect, createContext, useContext } from 'react';
-import { useStore } from '../store';
+import { useStore } from './ChatStore';
 
 type ChatContextType = {
   sendMessage: (msg: string) => void;

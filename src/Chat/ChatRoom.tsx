@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useStore } from '../store';
+import { useStore } from './ChatStore';
 import { useChat } from './ChatProvider';
 import { ChatUserMessage } from './components/ChatUserMessage';
 
