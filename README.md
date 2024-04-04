@@ -18,8 +18,8 @@ This is a proof of concept (PoC) for a real-time chat application built with Rea
 
 To install the application, follow these steps:
 
-1. Clone the repository: `git clone https://github.com/yourusername/chat-app.git`
-2. Navigate to the project directory: `cd chat-app`
+1. Clone the repository: `git clone https://github.com/yourusername/system-design-chat-poc.git`
+2. Navigate to the project directory: `cd system-design-chat-poc.git`
 3. Install the dependencies: `npm install`
 4. Start the application: `npm start`
 
